@@ -8,8 +8,18 @@ import DeleteButton from "./components/DeleteButton";
 function App() {
   const [query, setQuery] = useState("");
   const [cityData, setCityData] = useState({ cityDataArray: [] });
-  const [url, setUrl] = useState("perform new search");
-  // const [queryList, setQueryList] = useState({ queryListArray: [] });
+  const [url, setUrl] = useState("ready for new search");
+  const [queryList, setQueryList] = useState({ queryListArray: [] });
+
+  let cityNameList = cityData.cityDataArray.map((city) =>
+    city.name.toUpperCase()
+  );
+
+  let cityQueriedNameList = cityData.cityDataArray.map((city) =>
+    city.queriedName.toUpperCase()
+  );
+
+  let cityIdList = cityData.cityDataArray.map((city) => city.id);
 
   function makeCityObject(obj, query) {
     return {
@@ -25,29 +35,19 @@ function App() {
     };
   }
 
-  let cityNameList = cityData.cityDataArray.map((city) =>
-    city.name.toUpperCase()
-  );
-
-  let cityQueriedNameList = cityData.cityDataArray.map((city) =>
-    city.queriedName.toUpperCase()
-  );
-
-  let cityIdList = cityData.cityDataArray.map((city) => city.id);
-
   useEffect(() => {
     //check if city is already shown (by returned name and queried name), fetch data
     const fetchData = async () => {
       if (
-        url !== "perform new search" &&
-        !cityNameList.includes(query) &&
-        !cityQueriedNameList.includes(query)
+        url !== "ready for new search" &&
+        !cityNameList.includes(query.toUpperCase()) &&
+        !cityQueriedNameList.includes(query.toUpperCase())
       ) {
         const cityResponse = await axios(url);
-        console.log(cityResponse);
         const neighborResponse = await axios(
           `http://api.openweathermap.org/data/2.5/find?lat=${cityResponse.data.coord.lat}&lon=${cityResponse.data.coord.lon}&cnt=10&units=metric&appid=0f93316aa7be9b531c476732c3bfbd9a&lang=pl`
         );
+        console.log(cityResponse);
         console.log(neighborResponse);
 
         //check if city is already shown (by id) create new city object
@@ -57,11 +57,11 @@ function App() {
           !cityIdList.includes(cityResponse.data.id)
         ) {
           newCity = [makeCityObject(cityResponse.data, query)];
-          //newCity[0].id = cityResponse.data.id;
         } else {
           return;
         }
         console.log(newCity);
+
         //check neighbors object for queried city duplicates
         const filteredNeighbors = neighborResponse.data.list.filter(
           (neighbor) =>
@@ -69,8 +69,6 @@ function App() {
             !neighbor.name.split(" ").includes(cityResponse.data.name)
         );
 
-        // );
-        //console.log(filteredNeighbors);
         newCity[0].neighbors = filteredNeighbors.map((neighbor) =>
           makeCityObject(neighbor, query)
         );
@@ -79,39 +77,38 @@ function App() {
         setCityData((prevState) => ({
           cityDataArray: prevState.cityDataArray.concat(newCity),
         }));
-        setUrl("perform new search");
-        //console.log(cityData.cityDataArray);
+        setUrl("ready for new search");
       }
     };
     fetchData();
+    console.log(cityData.cityDataArray);
   }, [url]);
 
-  function handleDelete(num) {
-    setCityData((prevData) => ({
-      cityDataArray: prevData.cityDataArray.filter((city) => city.id !== num),
-    }));
-  }
+  // alternative handleDelete function
+  // function handleDelete(num) {
+  //   setCityData((prevState) => ({
+  //     cityDataArray: prevState.cityDataArray.filter((city) => city.id !== num),
+  //   }));
+  // }
 
   function resetQuery() {
     setQuery("");
   }
 
-  // function checkForDuplicates(q) {
-  //   queryList.queryListArray.includes(q)
-  //     ? () => {
-  //         setQueryList((prevState) => ({
-  //           queryListArray: prevState.queryListArray.filter(
-  //             (item) => q !== item
-  //           ),
-  //         }));
-  //         setUrl(
-  //           `http://api.openweathermap.org/data/2.5/weather?q=${q}&units=metric&appid=0f93316aa7be9b531c476732c3bfbd9a`
-  //         );
-  //       }
-  //     : () => {
-  //         setQueryList((prevState) => ({
-  //           queryListArray: prevState.queryListArray.concat(q.split())
-  //         }))}}
+  function handleDelete(num) {
+    const cityDataArray = [...cityData.cityDataArray];
+    setCityData({
+      cityDataArray: cityDataArray.filter((city) => city.id !== num),
+    });
+    setUrl("ready for new search");
+  }
+
+  function addToQueryList(q) {
+    setQueryList((prevState) => ({
+      queryListArray: prevState.queryListArray.concat(q.split()),
+    }));
+    console.log(queryList);
+  }
 
   return (
     <div>
@@ -119,14 +116,11 @@ function App() {
       <button
         type="button"
         onClick={() => {
-          // checkForDuplicates(query);
+          addToQueryList(query);
           setUrl(
             `http://api.openweathermap.org/data/2.5/weather?q=${query}&units=metric&appid=0f93316aa7be9b531c476732c3bfbd9a&lang=pl`
           );
         }}
-        // addToQueryList((prevState) => !queryListArray.includes(query) ?
-        //   queryListArray: prevState.queryListArray.concat(query.split()),
-        // ;
       >
         Wyślij
       </button>
