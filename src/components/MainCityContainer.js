@@ -16,10 +16,7 @@ export default function MainCityContainer(props) {
       </button>
 
       {isSecondaryVisible && (
-        <div>
-          <SecondaryCityContainer neighbors={props.neighbors} />
-          {/* <DeleteButton id={props.id} onDelete={props.onDelete} /> */}
-        </div>
+        <SecondaryCityContainer neighbors={props.neighbors} />
       )}
     </li>
   );
