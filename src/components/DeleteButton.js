@@ -5,7 +5,7 @@ const DeleteButton = (props) => {
     <button
       className="delete_button"
       onClick={() => {
-        props.onDelete(props.id);
+        props.onDeleteItem(props.id);
       }}
     >
       Usuń

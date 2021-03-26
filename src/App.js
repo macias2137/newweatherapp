@@ -6,6 +6,7 @@ import Input from "./components/Input";
 import MainCityContainer from "./components/MainCityContainer";
 import DeleteButton from "./components/DeleteButton";
 import SubmitButton from "./components/SubmitButton";
+import MainCityList from "./components/MainCityList";
 import "./styles/app.sass";
 
 function App() {
@@ -22,13 +23,6 @@ function App() {
     city.queriedName.toUpperCase()
   );
 
-  // let cityNameWithNoDiacriticsList = cityData.cityDataArray.map((city) =>
-  //   city.nameWithNoDiacritics.toUpperCase()
-  // );
-
-  // let cityQueriedNameWithNoDiacriticsList = cityData.cityDataArray.map((city) =>
-  //   city.queriedNameWithNoDiacritics.toUpperCase()
-  // );
   let cityIdList = cityData.cityDataArray.map((city) => city.id);
 
   function makeCityObject(obj, query) {
@@ -80,6 +74,7 @@ function App() {
         console.log(newCity);
 
         //check queried neighbor cities for queried main city duplicates
+
         const filteredNeighbors = neighborResponse.data.list.filter(
           (neighbor) =>
             !neighbor.name
@@ -104,10 +99,6 @@ function App() {
           (neighbor) => neighbor.name
         );
         console.log(filteredNeighborNames);
-
-        // const filteredNeighborNamesNoDiacritics = Diacritic.clean(
-        //   filteredNeighborNames
-        // );
 
         //remove duplicates among queried neighbors if multiple stations
         const uniqueNeighborSet = [...new Set(filteredNeighborNames)];
@@ -138,13 +129,6 @@ function App() {
     console.log(cityData.cityDataArray);
   }, [url]);
 
-  // alternative handleDelete function
-  // function handleDelete(num) {
-  //   setCityData((prevState) => ({
-  //     cityDataArray: prevState.cityDataArray.filter((city) => city.id !== num),
-  //   }));
-  // }
-
   function handleDelete(num) {
     const cityDataArray = [...cityData.cityDataArray];
     setCityData({
@@ -161,7 +145,7 @@ function App() {
   }
 
   return (
-    <div>
+    <div className="main_view">
       <Input value={query} onChange={(event) => setQuery(event.target.value)} />
       <SubmitButton
         onClick={() => {
@@ -171,24 +155,7 @@ function App() {
           );
         }}
       />
-
-      <ul>
-        {cityData.cityDataArray.length >= 1 ? (
-          cityData.cityDataArray.map((city) => (
-            <div>
-              <MainCityContainer
-                name={city.name}
-                id={city.id}
-                temp={city.temp}
-                neighbors={city.neighbors}
-              />
-              <DeleteButton id={city.id} onDelete={handleDelete} />
-            </div>
-          ))
-        ) : (
-          <div>wpisz miasto</div>
-        )}
-      </ul>
+      <MainCityList data={cityData.cityDataArray} onDeleteItem={handleDelete} />
     </div>
   );
 }

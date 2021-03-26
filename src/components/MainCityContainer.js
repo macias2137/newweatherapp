@@ -1,21 +1,24 @@
 import react, { useState } from "react";
-import SecondaryCityContainer from "./SecondaryCityContainer";
+import NeighborCityContainer from "./NeighborCityContainer";
 import ShowMoreButton from "./ShowMoreButton";
+import CityItem from "./CityItem";
 
 export default function MainCityContainer(props) {
   const [isSecondaryVisible, toggleSecondaryVisible] = useState(false);
   return (
-    <li>
-      <ul>
-        <li>{props.name}</li>
-        <li>{props.id}</li>
-        <li>{props.temp}</li>
-      </ul>
+    <li className="main_city_container">
+      <CityItem
+        name={props.name}
+        id={props.id}
+        temp={props.temp}
+        icon={props.icon}
+      />
+
       <ShowMoreButton
         toggleSecondary={() => toggleSecondaryVisible(!isSecondaryVisible)}
       />
       {isSecondaryVisible && (
-        <SecondaryCityContainer neighbors={props.neighbors} />
+        <NeighborCityContainer neighbors={props.neighbors} />
       )}
     </li>
   );
