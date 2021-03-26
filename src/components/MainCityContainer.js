@@ -1,6 +1,6 @@
 import react, { useState } from "react";
 import SecondaryCityContainer from "./SecondaryCityContainer";
-// import DeleteButton from "./DeleteButton";
+import ShowMoreButton from "./ShowMoreButton";
 
 export default function MainCityContainer(props) {
   const [isSecondaryVisible, toggleSecondaryVisible] = useState(false);
@@ -11,10 +11,9 @@ export default function MainCityContainer(props) {
         <li>{props.id}</li>
         <li>{props.temp}</li>
       </ul>
-      <button onClick={() => toggleSecondaryVisible(!isSecondaryVisible)}>
-        Pokaż więcej{" "}
-      </button>
-
+      <ShowMoreButton
+        toggleSecondary={() => toggleSecondaryVisible(!isSecondaryVisible)}
+      />
       {isSecondaryVisible && (
         <SecondaryCityContainer neighbors={props.neighbors} />
       )}

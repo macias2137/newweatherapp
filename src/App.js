@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Diacritic from "diacritic";
 import "./App.css";
 import Input from "./components/Input";
 import MainCityContainer from "./components/MainCityContainer";
 import DeleteButton from "./components/DeleteButton";
+import SubmitButton from "./components/SubmitButton";
 import "./styles/app.sass";
 
 function App() {
@@ -20,12 +22,21 @@ function App() {
     city.queriedName.toUpperCase()
   );
 
+  let cityNameWithNoDiacriticsList = cityData.cityDataArray.map((city) =>
+    city.nameWithNoDiacritics.toUpperCase()
+  );
+
+  let cityQueriedNameWithNoDiacriticsList = cityData.cityDataArray.map((city) =>
+    city.queriedNameWithNoDiacritics.toUpperCase()
+  );
   let cityIdList = cityData.cityDataArray.map((city) => city.id);
 
   function makeCityObject(obj, query) {
     return {
       name: obj.name,
       queriedName: query,
+      nameWithNoDiacritics: Diacritic.clean(obj.name),
+      queriedNameWithNoDiacritics: Diacritic.clean(query),
       id: obj.id,
       lat: obj.coord.lat,
       lon: obj.coord.lon,
@@ -41,8 +52,12 @@ function App() {
     const fetchData = async () => {
       if (
         url !== "ready for new search" &&
-        !cityNameList.includes(query.toUpperCase()) &&
-        !cityQueriedNameList.includes(query.toUpperCase())
+        !cityNameWithNoDiacriticsList.includes(
+          Diacritic.clean(query.toUpperCase())
+        ) &&
+        !cityQueriedNameWithNoDiacriticsList.includes(
+          Diacritic.clean(query.toUpperCase())
+        )
       ) {
         const cityResponse = await axios(url);
         const neighborResponse = await axios(
@@ -67,8 +82,14 @@ function App() {
         //check queried neighbor cities for queried main city duplicates
         const filteredNeighbors = neighborResponse.data.list.filter(
           (neighbor) =>
-            !neighbor.name.split(" ").includes(query) &&
-            !neighbor.name.split(" ").includes(cityResponse.data.name)
+            !neighbor.name
+              .toUpperCase()
+              .split(" ")
+              .includes(newCity[0].name.toUpperCase()) &&
+            !neighbor.name
+              .toUpperCase()
+              .split(" ")
+              .includes(newCity[0].queriedName.toUpperCase())
         );
 
         const filteredNeighborNames = filteredNeighbors.map(
@@ -76,13 +97,25 @@ function App() {
         );
         console.log(filteredNeighborNames);
 
+        // const filteredNeighborNamesNoDiacritics = Diacritic.clean(
+        //   filteredNeighborNames
+        // );
+
         //remove duplicates among queried neighbors if multiple stations
         const uniqueNeighborSet = [...new Set(filteredNeighborNames)];
         const uniqueNeighborNames = Array.from(uniqueNeighborSet);
         console.log(uniqueNeighborNames);
 
+        const xxx = uniqueNeighborNames.map((neighbor) =>
+          Diacritic.clean(neighbor)
+        );
+        console.log(xxx);
+
         const uniqueNeighborData = uniqueNeighborNames.map((name) =>
-          filteredNeighbors.find((neighbor) => neighbor.name === name)
+          filteredNeighbors.find(
+            (neighbor) =>
+              Diacritic.clean(neighbor.name) === Diacritic.clean(name)
+          )
         );
         console.log(uniqueNeighborData);
 
@@ -127,17 +160,15 @@ function App() {
   return (
     <div>
       <Input value={query} onChange={(event) => setQuery(event.target.value)} />
-      <button
-        type="button"
+      <SubmitButton
         onClick={() => {
           addToQueryList(query);
           setUrl(
             `http://api.openweathermap.org/data/2.5/weather?q=${query}&units=metric&&lang=pl&appid=0f93316aa7be9b531c476732c3bfbd9a`
           );
         }}
-      >
-        Wyślij
-      </button>
+      />
+
       <ul>
         {cityData.cityDataArray.length >= 1 ? (
           cityData.cityDataArray.map((city) => (
