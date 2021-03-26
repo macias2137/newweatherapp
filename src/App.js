@@ -4,7 +4,7 @@ import "./App.css";
 import Input from "./components/Input";
 import MainCityContainer from "./components/MainCityContainer";
 import DeleteButton from "./components/DeleteButton";
-import { Uniq } from "react-lodash";
+import "./styles/app.sass";
 
 function App() {
   const [query, setQuery] = useState("");
@@ -52,7 +52,7 @@ function App() {
         console.log(cityResponse);
         console.log(neighborResponse);
 
-        //check if city is already shown (by id) create new city object
+        //check if queried city is already shown (by id), create new city object
         let newCity = [];
         if (
           cityIdList.length === 0 ||
@@ -64,7 +64,7 @@ function App() {
         }
         console.log(newCity);
 
-        //check neighbors object for queried city duplicates
+        //check queried neighbor cities for queried main city duplicates
         const filteredNeighbors = neighborResponse.data.list.filter(
           (neighbor) =>
             !neighbor.name.split(" ").includes(query) &&
@@ -76,30 +76,22 @@ function App() {
         );
         console.log(filteredNeighborNames);
 
+        //remove duplicates among queried neighbors if multiple stations
         const uniqueNeighborSet = [...new Set(filteredNeighborNames)];
         const uniqueNeighborNames = Array.from(uniqueNeighborSet);
         console.log(uniqueNeighborNames);
-
-        // const uniqueNeighborData = [];
-
-        // for (let i = 0; i < uniqueNeighborNames.length; i++) {
-        //   uniqueNeighborData.push(
-        //     filteredNeighbors.find(
-        //       (neighbor) => (neighbor.name = uniqueNeighborNames[i])
-        //     )
-        //   );
-        // }
 
         const uniqueNeighborData = uniqueNeighborNames.map((name) =>
           filteredNeighbors.find((neighbor) => neighbor.name === name)
         );
         console.log(uniqueNeighborData);
 
+        //assign "neighbors" object to main city object
         newCity[0].neighbors = uniqueNeighborData.map((neighbor) =>
           makeCityObject(neighbor, query)
         );
-
         console.log(newCity[0].neighbors);
+
         setCityData((prevState) => ({
           cityDataArray: prevState.cityDataArray.concat(newCity),
         }));
