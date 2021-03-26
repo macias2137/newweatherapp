@@ -5,7 +5,6 @@ const DeleteButton = (props) => {
     <button
       onClick={() => {
         props.onDelete(props.id);
-        props.resetQuery();
       }}
     >
       Usuń

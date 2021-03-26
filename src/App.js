@@ -4,6 +4,7 @@ import "./App.css";
 import Input from "./components/Input";
 import MainCityContainer from "./components/MainCityContainer";
 import DeleteButton from "./components/DeleteButton";
+import { Uniq } from "react-lodash";
 
 function App() {
   const [query, setQuery] = useState("");
@@ -45,8 +46,9 @@ function App() {
       ) {
         const cityResponse = await axios(url);
         const neighborResponse = await axios(
-          `http://api.openweathermap.org/data/2.5/find?lat=${cityResponse.data.coord.lat}&lon=${cityResponse.data.coord.lon}&cnt=10&units=metric&appid=0f93316aa7be9b531c476732c3bfbd9a&lang=pl`
+          `http://api.openweathermap.org/data/2.5/find?lat=${cityResponse.data.coord.lat}&lon=${cityResponse.data.coord.lon}&cnt=10&units=metric&lang=pl&appid=0f93316aa7be9b531c476732c3bfbd9a`
         );
+
         console.log(cityResponse);
         console.log(neighborResponse);
 
@@ -69,7 +71,31 @@ function App() {
             !neighbor.name.split(" ").includes(cityResponse.data.name)
         );
 
-        newCity[0].neighbors = filteredNeighbors.map((neighbor) =>
+        const filteredNeighborNames = filteredNeighbors.map(
+          (neighbor) => neighbor.name
+        );
+        console.log(filteredNeighborNames);
+
+        const uniqueNeighborSet = [...new Set(filteredNeighborNames)];
+        const uniqueNeighborNames = Array.from(uniqueNeighborSet);
+        console.log(uniqueNeighborNames);
+
+        // const uniqueNeighborData = [];
+
+        // for (let i = 0; i < uniqueNeighborNames.length; i++) {
+        //   uniqueNeighborData.push(
+        //     filteredNeighbors.find(
+        //       (neighbor) => (neighbor.name = uniqueNeighborNames[i])
+        //     )
+        //   );
+        // }
+
+        const uniqueNeighborData = uniqueNeighborNames.map((name) =>
+          filteredNeighbors.find((neighbor) => neighbor.name === name)
+        );
+        console.log(uniqueNeighborData);
+
+        newCity[0].neighbors = uniqueNeighborData.map((neighbor) =>
           makeCityObject(neighbor, query)
         );
 
@@ -90,10 +116,6 @@ function App() {
   //     cityDataArray: prevState.cityDataArray.filter((city) => city.id !== num),
   //   }));
   // }
-
-  function resetQuery() {
-    setQuery("");
-  }
 
   function handleDelete(num) {
     const cityDataArray = [...cityData.cityDataArray];
@@ -118,7 +140,7 @@ function App() {
         onClick={() => {
           addToQueryList(query);
           setUrl(
-            `http://api.openweathermap.org/data/2.5/weather?q=${query}&units=metric&appid=0f93316aa7be9b531c476732c3bfbd9a&lang=pl`
+            `http://api.openweathermap.org/data/2.5/weather?q=${query}&units=metric&&lang=pl&appid=0f93316aa7be9b531c476732c3bfbd9a`
           );
         }}
       >
@@ -134,11 +156,7 @@ function App() {
                 temp={city.temp}
                 neighbors={city.neighbors}
               />
-              <DeleteButton
-                id={city.id}
-                onDelete={handleDelete}
-                resetQuery={resetQuery}
-              />
+              <DeleteButton id={city.id} onDelete={handleDelete} />
             </div>
           ))
         ) : (
