@@ -22,13 +22,13 @@ function App() {
     city.queriedName.toUpperCase()
   );
 
-  let cityNameWithNoDiacriticsList = cityData.cityDataArray.map((city) =>
-    city.nameWithNoDiacritics.toUpperCase()
-  );
+  // let cityNameWithNoDiacriticsList = cityData.cityDataArray.map((city) =>
+  //   city.nameWithNoDiacritics.toUpperCase()
+  // );
 
-  let cityQueriedNameWithNoDiacriticsList = cityData.cityDataArray.map((city) =>
-    city.queriedNameWithNoDiacritics.toUpperCase()
-  );
+  // let cityQueriedNameWithNoDiacriticsList = cityData.cityDataArray.map((city) =>
+  //   city.queriedNameWithNoDiacritics.toUpperCase()
+  // );
   let cityIdList = cityData.cityDataArray.map((city) => city.id);
 
   function makeCityObject(obj, query) {
@@ -52,12 +52,12 @@ function App() {
     const fetchData = async () => {
       if (
         url !== "ready for new search" &&
-        !cityNameWithNoDiacriticsList.includes(
-          Diacritic.clean(query.toUpperCase())
-        ) &&
-        !cityQueriedNameWithNoDiacriticsList.includes(
-          Diacritic.clean(query.toUpperCase())
-        )
+        !cityNameList
+          .map((city) => Diacritic.clean(city))
+          .includes(Diacritic.clean(query).toUpperCase()) &&
+        !cityQueriedNameList
+          .map((q) => Diacritic.clean(q))
+          .includes(Diacritic.clean(query).toUpperCase())
       ) {
         const cityResponse = await axios(url);
         const neighborResponse = await axios(
@@ -89,7 +89,15 @@ function App() {
             !neighbor.name
               .toUpperCase()
               .split(" ")
-              .includes(newCity[0].queriedName.toUpperCase())
+              .includes(newCity[0].queriedName.toUpperCase()) &&
+            !neighbor.name
+              .toUpperCase()
+              .split(" ")
+              .includes(newCity[0].nameWithNoDiacritics.toUpperCase()) &&
+            !neighbor.name
+              .toUpperCase()
+              .split(" ")
+              .includes(newCity[0].queriedNameWithNoDiacritics.toUpperCase())
         );
 
         const filteredNeighborNames = filteredNeighbors.map(
@@ -105,11 +113,6 @@ function App() {
         const uniqueNeighborSet = [...new Set(filteredNeighborNames)];
         const uniqueNeighborNames = Array.from(uniqueNeighborSet);
         console.log(uniqueNeighborNames);
-
-        const xxx = uniqueNeighborNames.map((neighbor) =>
-          Diacritic.clean(neighbor)
-        );
-        console.log(xxx);
 
         const uniqueNeighborData = uniqueNeighborNames.map((name) =>
           filteredNeighbors.find(
