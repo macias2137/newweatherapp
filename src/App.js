@@ -37,6 +37,7 @@ function App() {
       weather: obj.weather[0].main,
       icon: obj.weather[0].icon,
       temp: obj.main.temp,
+      isNeighbor: false,
       neighbors: {},
     };
   }
@@ -45,6 +46,7 @@ function App() {
     //check if city is already shown (by returned name and queried name), fetch data
     const fetchData = async () => {
       if (
+        query !== "" &&
         url !== "ready for new search" &&
         !cityNameList
           .map((city) => Diacritic.clean(city))
@@ -74,7 +76,6 @@ function App() {
         console.log(newCity);
 
         //check queried neighbor cities for queried main city duplicates
-
         const filteredNeighbors = neighborResponse.data.list.filter(
           (neighbor) =>
             !neighbor.name
@@ -114,9 +115,11 @@ function App() {
         console.log(uniqueNeighborData);
 
         //assign "neighbors" object to main city object
-        newCity[0].neighbors = uniqueNeighborData.map((neighbor) =>
+        let neighbors = uniqueNeighborData.map((neighbor) =>
           makeCityObject(neighbor, query)
         );
+        neighbors.map((neighbor) => (neighbor.isNeighbor = true));
+        newCity[0].neighbors = neighbors;
         console.log(newCity[0].neighbors);
 
         setCityData((prevState) => ({
@@ -146,15 +149,20 @@ function App() {
 
   return (
     <div className="main_view">
-      <Input value={query} onChange={(event) => setQuery(event.target.value)} />
-      <SubmitButton
-        onClick={() => {
-          addToQueryList(query);
-          setUrl(
-            `http://api.openweathermap.org/data/2.5/weather?q=${query}&units=metric&&lang=pl&appid=0f93316aa7be9b531c476732c3bfbd9a`
-          );
-        }}
-      />
+      <div className="main_view_header">
+        <Input
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+        />
+        <SubmitButton
+          onClick={() => {
+            addToQueryList(query);
+            setUrl(
+              `http://api.openweathermap.org/data/2.5/weather?q=${query}&units=metric&&lang=pl&appid=0f93316aa7be9b531c476732c3bfbd9a`
+            );
+          }}
+        />
+      </div>
       <MainCityList data={cityData.cityDataArray} onDeleteItem={handleDelete} />
     </div>
   );

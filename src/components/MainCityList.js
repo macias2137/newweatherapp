@@ -6,21 +6,17 @@ const MainCityList = (props) => (
   <ul className="main_city_list">
     {props.data.length >= 1 ? (
       props.data.map((city) => (
-        <li>
-          <ul className="city_container_list">
-            <MainCityContainer
-              name={city.name}
-              id={city.id}
-              temp={city.temp}
-              icon={city.icon}
-              neighbors={city.neighbors}
-            />
-          </ul>
-          <DeleteButton id={city.id} onDeleteItem={props.onDeleteItem} />
-        </li>
+        <MainCityContainer
+          name={city.name}
+          id={city.id}
+          temp={city.temp}
+          icon={city.icon}
+          neighbors={city.neighbors}
+          onDeleteItem={props.onDeleteItem}
+        />
       ))
     ) : (
-      <div>wpisz miasto</div>
+      <li>wpisz miasto</li>
     )}
   </ul>
 );
