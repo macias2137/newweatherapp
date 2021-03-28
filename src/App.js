@@ -5,7 +5,7 @@ import "./App.css";
 import Input from "./components/Input";
 import MainCityContainer from "./components/MainCityContainer";
 import DeleteButton from "./components/DeleteButton";
-import SubmitButton from "./components/SubmitButton";
+//import SubmitButton from "./components/SubmitButton";
 import MainCityList from "./components/MainCityList";
 import "./styles/app.sass";
 
@@ -153,9 +153,7 @@ function App() {
         <Input
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-        />
-        <SubmitButton
-          onClick={() => {
+          addToQuery={() => {
             addToQueryList(query);
             setUrl(
               `http://api.openweathermap.org/data/2.5/weather?q=${query}&units=metric&&lang=pl&appid=0f93316aa7be9b531c476732c3bfbd9a`

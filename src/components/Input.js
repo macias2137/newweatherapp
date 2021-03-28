@@ -1,4 +1,5 @@
 import React from "react";
+import SubmitButton from "./SubmitButton";
 
 const Input = (props) => (
   <form id="input">
@@ -11,6 +12,7 @@ const Input = (props) => (
       value={props.value}
       onChange={props.onChange}
     />
+    <SubmitButton onClick={props.addToQuery} />
   </form>
 );
 
