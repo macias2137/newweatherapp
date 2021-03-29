@@ -2,10 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Diacritic from "diacritic";
 import "./App.css";
-import Input from "./components/Input";
-import MainCityContainer from "./components/MainCityContainer";
-import DeleteButton from "./components/DeleteButton";
-//import SubmitButton from "./components/SubmitButton";
+import InputSection from "./components/InputSection";
 import MainCityList from "./components/MainCityList";
 import "./styles/app.sass";
 
@@ -150,7 +147,7 @@ function App() {
   return (
     <div className="main_view">
       <div className="main_view_header">
-        <Input
+        <InputSection
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           addToQuery={() => {

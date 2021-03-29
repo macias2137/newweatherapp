@@ -1,7 +1,7 @@
 import React from "react";
 import SubmitButton from "./SubmitButton";
 
-const Input = (props) => (
+const InputSection = (props) => (
   <form id="input">
     <label className="city_input_label" for="input">
       Wpisz nazwę miasta
@@ -16,4 +16,4 @@ const Input = (props) => (
   </form>
 );
 
-export default Input;
+export default InputSection;
