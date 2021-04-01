@@ -12,7 +12,7 @@ const InputSection = (props) => (
       value={props.value}
       onChange={props.onChange}
     />
-    <SubmitButton onClick={props.addToQuery} />
+    <SubmitButton onClick={props.onSubmit} />
   </form>
 );
 
